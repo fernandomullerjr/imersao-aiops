@@ -1,0 +1,55 @@
+# Copie este arquivo para terraform.tfvars e preencha com os valores reais.
+# NUNCA faça commit do arquivo terraform.tfvars — ele contém seu token da DigitalOcean.
+#
+# Como usar:
+#   cp terraform.tfvars.example terraform.tfvars
+#   # edite terraform.tfvars
+#   terraform init
+#   terraform plan
+#   terraform apply
+
+# ---------------------------------------------------------------------------
+# Obrigatório — sem valor padrão, deve ser definido
+# ---------------------------------------------------------------------------
+
+do_token = "dop_v1_SUBSTITUA_PELO_SEU_TOKEN"
+
+# ---------------------------------------------------------------------------
+# Identidade do cluster
+# ---------------------------------------------------------------------------
+
+cluster_name = "imersao-aiops"
+environment  = "dev" # dev | staging | prod
+
+# ---------------------------------------------------------------------------
+# Região e versão do Kubernetes
+# ---------------------------------------------------------------------------
+
+region             = "nyc3"
+kubernetes_version = "1.29"
+
+# ---------------------------------------------------------------------------
+# Node pool
+# ---------------------------------------------------------------------------
+
+node_pool_name = "default-pool"
+node_size      = "s-2vcpu-4gb" # 2 vCPUs, 4 GiB RAM, 80 GiB SSD
+node_count     = 3
+
+# ---------------------------------------------------------------------------
+# Comportamento do cluster
+# ---------------------------------------------------------------------------
+
+auto_upgrade           = false
+surge_upgrade          = true
+maintenance_start_time = "04:00"
+maintenance_day        = "sunday"
+
+# ---------------------------------------------------------------------------
+# Tags adicionais (opcional)
+# ---------------------------------------------------------------------------
+
+extra_tags = [
+  # "time:plataforma",
+  # "centro-de-custo:engenharia",
+]

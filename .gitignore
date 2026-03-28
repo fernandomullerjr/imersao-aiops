@@ -1,0 +1,8 @@
+# Terraform
+k8s-cluster/.terraform/
+k8s-cluster/.terraform.lock.hcl
+k8s-cluster/terraform.tfstate
+k8s-cluster/terraform.tfstate.backup
+k8s-cluster/terraform.tfvars
+k8s-cluster/*.tfplan
+k8s-cluster/crash.log
