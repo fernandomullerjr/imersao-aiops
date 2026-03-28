@@ -25,6 +25,7 @@ Antes de começar, instale as ferramentas abaixo:
 
 - **Terraform** `>= 1.6.0` — [https://developer.hashicorp.com/terraform/install](https://developer.hashicorp.com/terraform/install)
 - **doctl** (CLI da DigitalOcean, opcional mas recomendado) — [https://docs.digitalocean.com/reference/doctl/how-to/install/](https://docs.digitalocean.com/reference/doctl/how-to/install/)
+  - Apenas rodar o comando: `brew install doctl`
 - **kubectl** — [https://kubernetes.io/docs/tasks/tools/](https://kubernetes.io/docs/tasks/tools/)
 
 ---

@@ -42,11 +42,12 @@ variable "region" {
 variable "kubernetes_version" {
   description = <<-EOT
     Prefixo da versão do Kubernetes a ser utilizada. O DOKS resolve automaticamente
-    para o último patch disponível (ex: "1.29" → "1.29.x-do.y").
+    para o último patch disponível (ex: "1.32" → "1.32.x-do.y").
     Execute `doctl kubernetes options versions` para listar as versões disponíveis.
+    Deixe em branco para usar a versão mais recente disponível.
   EOT
   type        = string
-  default     = "1.29"
+  default     = "1.35"
 }
 
 # ---------------------------------------------------------------------------

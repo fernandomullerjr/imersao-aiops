@@ -1,3 +1,7 @@
+data "digitalocean_kubernetes_versions" "available" {
+  version_prefix = var.kubernetes_version
+}
+
 locals {
   # Tags base: sempre presentes independentemente de var.extra_tags
   base_tags = [
@@ -12,7 +16,7 @@ locals {
 resource "digitalocean_kubernetes_cluster" "this" {
   name    = "${var.cluster_name}-${var.environment}"
   region  = var.region
-  version = var.kubernetes_version
+  version = data.digitalocean_kubernetes_versions.available.latest_version
 
   auto_upgrade  = var.auto_upgrade
   surge_upgrade = var.surge_upgrade
@@ -31,4 +35,10 @@ resource "digitalocean_kubernetes_cluster" "this" {
   }
 
   tags = local.all_tags
+
+  # Upgrades de versão são gerenciados manualmente (console/doctl) ou via auto_upgrade.
+  # O endpoint de upgrade do DOKS exige capacidade de surge independente do flag surge_upgrade.
+  lifecycle {
+    ignore_changes = [version]
+  }
 }

@@ -38,6 +38,7 @@ output "cluster_ca_certificate" {
 output "kube_host" {
   description = "URL do host do servidor de API do Kubernetes (mesmo que cluster_endpoint, mas extraído do kubeconfig)."
   value       = digitalocean_kubernetes_cluster.this.kube_config[0].host
+  sensitive   = true
 }
 
 output "node_pool_id" {
@@ -46,6 +47,11 @@ output "node_pool_id" {
 }
 
 output "kubernetes_version" {
-  description = "String completa da versão do Kubernetes resolvida pelo DOKS (ex: 1.29.4-do.0)."
+  description = "String completa da versão do Kubernetes resolvida pelo DOKS (ex: 1.32.2-do.0)."
   value       = digitalocean_kubernetes_cluster.this.version
+}
+
+output "kubernetes_version_available" {
+  description = "Versão mais recente disponível no DOKS para o prefixo configurado."
+  value       = data.digitalocean_kubernetes_versions.available.latest_version
 }
