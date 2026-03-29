@@ -33,6 +33,7 @@ imersao-aiops/
 │   ├── 02-dashboard.yaml           # Deployment do Dashboard + scraper
 │   └── README.md                   # Documentação detalhada do módulo
 │
+├── Makefile                        # Atalhos para operações comuns
 ├── .gitignore
 └── README.md                       # Este arquivo
 ```
@@ -51,54 +52,38 @@ imersao-aiops/
 
 ## Quick Start
 
-### 1. Provisionar o cluster (Terraform)
+### 1. Configurar o ambiente
 
 ```bash
-# Entre na pasta do módulo Terraform
-cd k8s-cluster/
+make setup
+# Cria o terraform.tfvars a partir do exemplo e roda terraform init.
+# Edite k8s-cluster/terraform.tfvars com seu token da DigitalOcean.
+```
 
-# Copie e edite as variáveis (inclua seu token da DigitalOcean)
-cp terraform.tfvars.example terraform.tfvars
+### 2. Provisionar o cluster
 
-# Inicialize, planeje e aplique
-terraform init
-terraform plan -out=cluster.tfplan
-terraform apply cluster.tfplan
+```bash
+make tf-plan-apply
+# Equivale a: terraform plan -out=cluster.tfplan && terraform apply cluster.tfplan
 ```
 
 > O cluster leva aproximadamente **5 a 10 minutos** para ficar disponível.
 
-### 2. Configurar o kubectl
+### 3. Configurar o kubectl
 
 ```bash
-# Via output do Terraform
-terraform output -raw kubeconfig_raw > ~/.kube/imersao-aiops.yaml
+make kubeconfig
 export KUBECONFIG=~/.kube/imersao-aiops.yaml
 
-# Ou via doctl
-doctl auth init
-doctl kubernetes cluster kubeconfig save imersao-aiops-dev
-
-# Verifique os nós
-kubectl get nodes
+make nodes   # verifica se os 3 nós estão Ready
 ```
 
-### 3. Deploy do Kubernetes Dashboard
+### 4. Deploy do Kubernetes Dashboard
 
 ```bash
-# Na raiz do repositório
-kubectl apply -f k8s-dashboard/
-
-# Aguarde os pods subirem
-kubectl rollout status deployment/kubernetes-dashboard -n kubernetes-dashboard
-
-# Obtenha o token de acesso
-kubectl get secret admin-user-token -n kubernetes-dashboard \
-  -o jsonpath="{.data.token}" | base64 --decode
-
-# Abra o túnel
-kubectl port-forward svc/kubernetes-dashboard -n kubernetes-dashboard 8443:443
-# Acesse: https://localhost:8443
+make dashboard-deploy    # aplica os manifests
+make dashboard-token     # exibe o token de acesso
+make dashboard-open      # abre o túnel → https://localhost:8443
 ```
 
 ---
@@ -114,6 +99,51 @@ kubectl port-forward svc/kubernetes-dashboard -n kubernetes-dashboard 8443:443
 | Armazenamento/nó  | 80 GiB SSD         |
 | Quantidade de nós | 3                  |
 | Região padrão     | `nyc3` (Nova York) |
+
+---
+
+## Makefile — Referência de Comandos
+
+Execute `make` ou `make help` para listar todos os targets disponíveis.
+
+### Setup e Terraform
+
+| Comando           | Descrição                                              |
+|-------------------|--------------------------------------------------------|
+| `make setup`      | Copia o `tfvars.example` e inicializa o Terraform      |
+| `make tf-init`    | Inicializa o Terraform (baixa providers)               |
+| `make tf-validate`| Valida a sintaxe dos manifestos                        |
+| `make tf-plan`    | Gera o plano de execução (`cluster.tfplan`)            |
+| `make tf-apply`   | Aplica o plano salvo                                   |
+| `make tf-plan-apply` | Gera e aplica o plano em sequência                  |
+| `make tf-output`  | Exibe todos os outputs do Terraform                    |
+| `make tf-versions`| Lista versões de Kubernetes disponíveis no DOKS        |
+| `make tf-destroy` | Destroi o cluster (pede confirmação)                   |
+
+### kubeconfig
+
+| Comando                | Descrição                                          |
+|------------------------|----------------------------------------------------|
+| `make kubeconfig`      | Exporta o kubeconfig via `terraform output`        |
+| `make kubeconfig-doctl`| Exporta o kubeconfig via `doctl`                   |
+
+### Cluster
+
+| Comando             | Descrição                                            |
+|---------------------|------------------------------------------------------|
+| `make nodes`        | Lista os nós do cluster                              |
+| `make cluster-info` | Exibe informações gerais e namespaces                |
+| `make all-resources`| Lista todos os recursos em todos os namespaces       |
+
+### Dashboard
+
+| Comando                  | Descrição                                        |
+|--------------------------|--------------------------------------------------|
+| `make dashboard-deploy`  | Faz o deploy do Kubernetes Dashboard             |
+| `make dashboard-status`  | Verifica pods e serviços do Dashboard            |
+| `make dashboard-token`   | Exibe o token de acesso                          |
+| `make dashboard-open`    | Abre o túnel (`https://localhost:8443`)          |
+| `make dashboard-delete`  | Remove o Dashboard do cluster                    |
 
 ---
 
@@ -149,9 +179,7 @@ Cada módulo possui seu próprio README com instruções completas:
 ## Destruir o Ambiente
 
 ```bash
-# Remove todos os recursos do cluster na DigitalOcean
-cd k8s-cluster/
-terraform destroy
+make tf-destroy
 ```
 
 > **Atenção:** Esta operação é irreversível e remove o cluster e todos os dados associados.
